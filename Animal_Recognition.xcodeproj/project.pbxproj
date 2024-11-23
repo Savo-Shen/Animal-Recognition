@@ -13,6 +13,9 @@
 		78641F152CEA274800B927B5 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 78641F142CEA274800B927B5 /* Launch Screen.storyboard */; };
 		78641F162CEA274800B927B5 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 78641F142CEA274800B927B5 /* Launch Screen.storyboard */; };
 		78641F172CEA274800B927B5 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 78641F142CEA274800B927B5 /* Launch Screen.storyboard */; };
+		786625332CF1F3D200DA0228 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 786625322CF1F3D200DA0228 /* README.md */; };
+		786625342CF1F3D200DA0228 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 786625322CF1F3D200DA0228 /* README.md */; };
+		786625352CF1F3D200DA0228 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 786625322CF1F3D200DA0228 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +41,27 @@
 		78641EEF2CE86EAC00B927B5 /* Animal_RecognitionUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Animal_RecognitionUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		78641F0C2CEA20AA00B927B5 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		78641F142CEA274800B927B5 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		786625322CF1F3D200DA0228 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7866253C2CF1F59200DA0228 /* Exceptions for "Animal_Recognition" folder in "Animal_RecognitionTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				CameraModel.swift,
+				CameraViewModel.swift,
+			);
+			target = 78641EE42CE86EAC00B927B5 /* Animal_RecognitionTests */;
+		};
+		7866253D2CF1F59200DA0228 /* Exceptions for "Animal_Recognition" folder in "Animal_RecognitionUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				CameraModel.swift,
+				CameraViewModel.swift,
+			);
+			target = 78641EEE2CE86EAC00B927B5 /* Animal_RecognitionUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7806356C2CECA2ED00586437 /* Models */ = {
@@ -48,6 +71,10 @@
 		};
 		78641ED72CE86EAB00B927B5 /* Animal_Recognition */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7866253C2CF1F59200DA0228 /* Exceptions for "Animal_Recognition" folder in "Animal_RecognitionTests" target */,
+				7866253D2CF1F59200DA0228 /* Exceptions for "Animal_Recognition" folder in "Animal_RecognitionUITests" target */,
+			);
 			path = Animal_Recognition;
 			sourceTree = "<group>";
 		};
@@ -91,6 +118,7 @@
 		78641ECC2CE86EAB00B927B5 = {
 			isa = PBXGroup;
 			children = (
+				786625322CF1F3D200DA0228 /* README.md */,
 				7806356C2CECA2ED00586437 /* Models */,
 				78641F142CEA274800B927B5 /* Launch Screen.storyboard */,
 				78641F0C2CEA20AA00B927B5 /* Images.xcassets */,
@@ -236,6 +264,7 @@
 			files = (
 				78641F0D2CEA20AA00B927B5 /* Images.xcassets in Resources */,
 				78641F162CEA274800B927B5 /* Launch Screen.storyboard in Resources */,
+				786625332CF1F3D200DA0228 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +272,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				786625352CF1F3D200DA0228 /* README.md in Resources */,
 				78641F152CEA274800B927B5 /* Launch Screen.storyboard in Resources */,
 				78641F0F2CEA20AA00B927B5 /* Images.xcassets in Resources */,
 			);
@@ -252,6 +282,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				786625342CF1F3D200DA0228 /* README.md in Resources */,
 				78641F172CEA274800B927B5 /* Launch Screen.storyboard in Resources */,
 				78641F0E2CEA20AA00B927B5 /* Images.xcassets in Resources */,
 			);
