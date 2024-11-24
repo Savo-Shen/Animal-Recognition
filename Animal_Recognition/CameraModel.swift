@@ -22,18 +22,20 @@ struct PredictObject {
 
 
 class PredictionManager {
-    private let model: yolov8n
-    private let mobileNet: MobileNetV2
+//    private let model: yolov8n
+//    private let mobileNet: MobileNetV2
     private let model3: YOLOv3
     
     init() {
         do {
             let configuration = MLModelConfiguration()
-            self.model = try yolov8n(configuration: configuration)
-            self.mobileNet = try MobileNetV2(configuration: configuration)
+            configuration.computeUnits = .cpuAndGPU
+//            self.model = try yolov8n(configuration: configuration)
+//            self.mobileNet = try MobileNetV2(configuration: configuration)
             self.model3 = try YOLOv3(configuration: configuration)
+            print("Model successfully loaded with GPU support.")
         } catch {
-            fatalError("Failed to load the CoreML model: \(error.localizedDescription)")
+            fatalError("Failed to load the CoreML model with GPU support: \(error.localizedDescription)")
         }
         
     }
