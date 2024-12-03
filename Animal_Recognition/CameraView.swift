@@ -103,7 +103,7 @@ struct BoundingBoxView: View {
         GeometryReader { geometry in
             ZStack {
                 if(self.predictObject.classId != -1) {
-                    Text("\(LabelList[self.predictObject.classId]): \(String(format: "%.2f", self.predictObject.confidence))")
+                    Text("\(LabelList11[self.predictObject.classId]): \(String(format: "%.2f", self.predictObject.confidence))")
                         .position(x: x, y: y - h / 2)
                     
                     // 显示矩形框
@@ -132,7 +132,21 @@ extension Notification.Name {
     static let takePhoto = Notification.Name("takePhoto")
 }
 
-let LabelList = [
+let LabelList11 = [
+    "狗",
+    "狐狸",
+    "牛",
+    "山羊",
+    "马",
+    "猪",
+    "羊",
+    "鹿",
+    "公牛",
+    "骡",
+    "羊驼"
+]
+
+let LabelList3 = [
       "人",
       "自行车",
       "汽车",
