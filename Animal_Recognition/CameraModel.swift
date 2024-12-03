@@ -1,4 +1,4 @@
-//
+
 //  ModelManager.swift
 //  Animal_Recognition
 //
@@ -24,7 +24,8 @@ struct PredictObject {
 class PredictionManager {
 //    private let model: yolov8n
 //    private let mobileNet: MobileNetV2
-    private let model3: YOLOv3
+    private let model: yolo11n_100
+//    private let model: YOLOv3
     
     init() {
         do {
@@ -32,7 +33,8 @@ class PredictionManager {
             configuration.computeUnits = .cpuAndGPU
 //            self.model = try yolov8n(configuration: configuration)
 //            self.mobileNet = try MobileNetV2(configuration: configuration)
-            self.model3 = try YOLOv3(configuration: configuration)
+//            self.model = try YOLOv3(configuration: configuration)
+            self.model = try yolo11n_100(configuration: configuration)
             print("Model successfully loaded with GPU support.")
         } catch {
             fatalError("Failed to load the CoreML model with GPU support: \(error.localizedDescription)")
@@ -45,26 +47,30 @@ class PredictionManager {
 //            DispatchQueue.global(qos: .userInitiated).async {
                 
                 var detectedObjects: [PredictObject] = []
-                let targetSize = CGSize(width: 416, height: 416) // 根据模型输入要求设置
+//            let targetSize = CGSize(width: 416, height: 416) // 根据模型输入要求设置
+            let targetSize = CGSize(width: 640, height: 640) // 根据模型输入要求设置
                 if let resizedImage = image.resize(to: targetSize),
                    let pixelBuffer = resizedImage.toCVPixelBuffer() {
                     
                     //                let yolov8Input: yolov8nInput = yolov8nInput(image: pixelBuffer)
-                    let yolov3Input: YOLOv3Input = YOLOv3Input(image: pixelBuffer)
+//                    let yolov3Input: YOLOv3Input = YOLOv3Input(image: pixelBuffer)
+                    let yolo11n_100Input: yolo11n_100Input = yolo11n_100Input(image: pixelBuffer, iouThreshold: 0, confidenceThreshold: 0)
                     do {
-                        let results = try self.model3.prediction(input: yolov3Input)
+                        let results = try self.model.prediction(input: yolo11n_100Input)
+//                        let results = try self.model.prediction(input: yolov3Input)
                         //                    print(results.var_914)
                         
                         //                    let detectedObject: PredictObject = self.getObject(predictResult: results.var_914)
                         if (results.coordinates.count != 0) {
-                            let detectedObject: PredictObject = self.getObject3(predictResult: results)
+                            let detectedObject: PredictObject = self.getObject11(predictResult: results)
+//                            let detectedObject: PredictObject = self.getObject3(predictResult: results)
                             //                    print(results.featureNames)
                             //                    print(results.confidence)
                             //                    print(results.confidenceShapedArray)
                             //                    print(results.coordinates.count)
                             //                    print(results.coordinatesShapedArray.count)
                             
-                            if(detectedObject.confidence > 0.5) {
+                            if(detectedObject.confidence > 0.1) {
                                 detectedObjects.append(detectedObject)
                             }
                         }
@@ -81,11 +87,46 @@ class PredictionManager {
         }
     }
     
+    
     func getObject3(predictResult: YOLOv3Output) -> PredictObject {
         var detectedObject: PredictObject = PredictObject()
         
         let coordinates = predictResult.coordinates
+
+        detectedObject.xCenter = 1 - coordinates[1].floatValue
+        detectedObject.yCenter = coordinates[0].floatValue
+        detectedObject.width = coordinates[3].floatValue
+        detectedObject.height = coordinates[2].floatValue
         
+//        detectedObject.xCenter = coordinates[0].floatValue
+//        detectedObject.yCenter = coordinates[1].floatValue
+//        detectedObject.width = coordinates[2].floatValue
+//        detectedObject.height = coordinates[3].floatValue
+        
+        var maxClassConfidence: Float = 0
+        var maxClassId: Int = -1
+                    
+        for i in 0..<80 {
+            
+            if (predictResult.confidence[i].floatValue > maxClassConfidence) {
+                maxClassConfidence = predictResult.confidence[i].floatValue
+                maxClassId = i
+            }
+
+        }
+        
+        detectedObject.classId = maxClassId
+        detectedObject.confidence = Float(maxClassConfidence)
+
+        return detectedObject
+        
+    }
+    
+    func getObject11(predictResult: yolo11n_100Output) -> PredictObject {
+        var detectedObject: PredictObject = PredictObject()
+        
+        let coordinates = predictResult.coordinates
+        print(coordinates)
 //        let xMin = coordinates[0]
 //        let yMin = coordinates[1]
 //        let xMax = coordinates[2]
@@ -99,6 +140,10 @@ class PredictionManager {
         detectedObject.yCenter = coordinates[0].floatValue
         detectedObject.width = coordinates[3].floatValue
         detectedObject.height = coordinates[2].floatValue
+//        detectedObject.xCenter = coordinates[0].floatValue
+//        detectedObject.yCenter = coordinates[1].floatValue
+//        detectedObject.width = coordinates[2].floatValue
+//        detectedObject.height = coordinates[3].floatValue
         
 //        detectedObject.xCenter = Float(width * coordinates[0].floatValue)
 //        detectedObject.yCenter = Float(height * coordinates[1].floatValue)
@@ -108,7 +153,7 @@ class PredictionManager {
         var maxClassConfidence: Float = 0
         var maxClassId: Int = -1
                     
-        for i in 0..<80 {
+        for i in 0..<11 {
             
             if (predictResult.confidence[i].floatValue > maxClassConfidence) {
                 maxClassConfidence = predictResult.confidence[i].floatValue
@@ -164,42 +209,42 @@ class PredictionManager {
 //            }
 //        }
         
-        var maxClassConfidence: Float = 0
-        var maxClassId: Int = -1
-        for i in 0..<depth {
-            for j in 0..<cols {
-                    
-
-                maxClassConfidence = 0
-                maxClassId = -1
-                for k in 0..<rows {
-
-                    let value = predictResult[[i, k, j] as [NSNumber]].floatValue
-                    print("\(i), \(k), \(j): \(predictResult[[i, k, j] as [NSNumber]])")
-//                    print(value)
-                    if (k == 0) {detectedObject.xCenter = value}
-                    else if (k == 1) {detectedObject.yCenter = value}
-                    else if (k == 2) {detectedObject.width = value}
-                    else if (k == 3) {detectedObject.height = value}
-                    else {
-//                        print(value)
-                        if (value > maxClassConfidence) {
-                            maxClassConfidence = value
-                            maxClassId = k - 4
-                        }
-                    }
-                }
-                detectedObject.classId = maxClassId
-                detectedObject.confidence = maxClassConfidence
-                print("begin")
-                print("x: \(detectedObject.xCenter)")
-                print("y: \(detectedObject.yCenter)")
-                print("w: \(detectedObject.width)")
-                print("h: \(detectedObject.height)")
-                print("confidence: \(detectedObject.confidence)")
-                print("id: \(detectedObject.classId)")
-            }
-        }
+//        var maxClassConfidence: Float = 0
+//        var maxClassId: Int = -1
+//        for i in 0..<depth {
+//            for j in 0..<cols {
+//                    
+//
+//                maxClassConfidence = 0
+//                maxClassId = -1
+//                for k in 0..<rows {
+//
+//                    let value = predictResult[[i, k, j] as [NSNumber]].floatValue
+//                    print("\(i), \(k), \(j): \(predictResult[[i, k, j] as [NSNumber]])")
+////                    print(value)
+//                    if (k == 0) {detectedObject.xCenter = value}
+//                    else if (k == 1) {detectedObject.yCenter = value}
+//                    else if (k == 2) {detectedObject.width = value}
+//                    else if (k == 3) {detectedObject.height = value}
+//                    else {
+////                        print(value)
+//                        if (value > maxClassConfidence) {
+//                            maxClassConfidence = value
+//                            maxClassId = k - 4
+//                        }
+//                    }
+//                }
+//                detectedObject.classId = maxClassId
+//                detectedObject.confidence = maxClassConfidence
+//                print("begin")
+//                print("x: \(detectedObject.xCenter)")
+//                print("y: \(detectedObject.yCenter)")
+//                print("w: \(detectedObject.width)")
+//                print("h: \(detectedObject.height)")
+//                print("confidence: \(detectedObject.confidence)")
+//                print("id: \(detectedObject.classId)")
+//            }
+//        }
 
         
         
