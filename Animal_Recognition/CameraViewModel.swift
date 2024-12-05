@@ -18,7 +18,7 @@ protocol CameraViewControllerDelegate: AnyObject {
 // UIViewControllerRepresentable: 用于将UIViewController从UIKit引入到SwiftUI
 struct CameraView: UIViewControllerRepresentable {
     
-    @Binding var predictObject: PredictObject?
+    @Binding var predictObject: [PredictObject]?
     @Binding var capturedImage: IdentifiableImage?
     let predictionManger: PredictionManager = PredictionManager()
 //    Coordinator：通常用于桥接UIKit和SwiftUI之间的交互。
@@ -62,14 +62,15 @@ struct CameraView: UIViewControllerRepresentable {
     //                print(self.parent.predictObject)
                     predictionManager.predict(image: image) { results in
                         if let results = results, !results.isEmpty {
-                            for result in results {
-                                print("Detected: \(result.classId) - Confidence: \(result.confidence)")
-                                print("x: \(result.xCenter) - y: \(result.yCenter)")
-                                print("w: \(result.width) - h: \(result.height)")
-                                self.parent.predictObject = result
-                            }
+//                            for result in results {
+//                                print("Detected: \(result.classId) - Confidence: \(result.confidence)")
+//                                print("x: \(result.xCenter) - y: \(result.yCenter)")
+//                                print("w: \(result.width) - h: \(result.height)")
+//                            }
+                            self.parent.predictObject = results
                         } else {
-                            self.parent.predictObject = PredictObject(xCenter: 0, yCenter: 0, width: 0, height: 0, classId: -1, confidence: 0)
+//                            self.parent.predictObject = PredictObject(xCenter: 0, yCenter: 0, width: 0, height: 0, classId: -1, confidence: 0)
+//                            self.parent.predictObject = []
 //                            print("No objects detected or prediction failed.")
                         }
                     }
