@@ -16,6 +16,9 @@
 		786625332CF1F3D200DA0228 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 786625322CF1F3D200DA0228 /* README.md */; };
 		786625342CF1F3D200DA0228 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 786625322CF1F3D200DA0228 /* README.md */; };
 		786625352CF1F3D200DA0228 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 786625322CF1F3D200DA0228 /* README.md */; };
+		7893EB3B2D01F4A100B70B7F /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 7893EB3A2D01F4A100B70B7F /* .gitignore */; };
+		7893EB3C2D01F4A100B70B7F /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 7893EB3A2D01F4A100B70B7F /* .gitignore */; };
+		7893EB3D2D01F4A100B70B7F /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 7893EB3A2D01F4A100B70B7F /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +45,7 @@
 		78641F0C2CEA20AA00B927B5 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		78641F142CEA274800B927B5 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		786625322CF1F3D200DA0228 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		7893EB3A2D01F4A100B70B7F /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -118,6 +122,7 @@
 		78641ECC2CE86EAB00B927B5 = {
 			isa = PBXGroup;
 			children = (
+				7893EB3A2D01F4A100B70B7F /* .gitignore */,
 				786625322CF1F3D200DA0228 /* README.md */,
 				7806356C2CECA2ED00586437 /* Models */,
 				78641F142CEA274800B927B5 /* Launch Screen.storyboard */,
@@ -264,6 +269,7 @@
 			files = (
 				78641F0D2CEA20AA00B927B5 /* Images.xcassets in Resources */,
 				78641F162CEA274800B927B5 /* Launch Screen.storyboard in Resources */,
+				7893EB3B2D01F4A100B70B7F /* .gitignore in Resources */,
 				786625332CF1F3D200DA0228 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -272,6 +278,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7893EB3C2D01F4A100B70B7F /* .gitignore in Resources */,
 				786625352CF1F3D200DA0228 /* README.md in Resources */,
 				78641F152CEA274800B927B5 /* Launch Screen.storyboard in Resources */,
 				78641F0F2CEA20AA00B927B5 /* Images.xcassets in Resources */,
@@ -282,6 +289,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7893EB3D2D01F4A100B70B7F /* .gitignore in Resources */,
 				786625342CF1F3D200DA0228 /* README.md in Resources */,
 				78641F172CEA274800B927B5 /* Launch Screen.storyboard in Resources */,
 				78641F0E2CEA20AA00B927B5 /* Images.xcassets in Resources */,
