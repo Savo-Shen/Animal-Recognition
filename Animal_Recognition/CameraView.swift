@@ -26,7 +26,7 @@ struct ContentView: View {
 //  nil就是空类似NULL
     @State private var capturedImage: IdentifiableImage? = nil
 //    @State private var predictObject: PredictObject? = PredictObject(xCenter: 220, yCenter: 450, width: 440, height: 890)
-    @State private var predictObject: PredictObject? = nil
+    @State private var predictObject: [PredictObject]? = nil
     @State private var isCameraActive = true
     
     var body: some View {
@@ -86,42 +86,48 @@ struct ContentView: View {
 
 struct BoundingBoxView: View {
     // 假设你从 YOLO 模型中提取的 xywh 值（已转换为像素值）
-    var predictObject: PredictObject
+    var predictObject: [PredictObject]
     
     var width: CGFloat = UIScreen.main.bounds.width
     var height: CGFloat = UIScreen.main.bounds.height
     
     var body: some View {
-        
-        let w = CGFloat(self.predictObject.width) * width
-        let h = CGFloat(self.predictObject.height) * height
-        let x = CGFloat(self.predictObject.xCenter) * width
-        let y = CGFloat(self.predictObject.yCenter) * height
-        
-//        Text("width: \(width), height: \(height)")
-        
         GeometryReader { geometry in
-            ZStack {
-                if(self.predictObject.classId != -1) {
-                    Text("\(LabelList11[self.predictObject.classId]): \(String(format: "%.2f", self.predictObject.confidence))")
-                        .position(x: x, y: y - h / 2)
-                    
-                    // 显示矩形框
-                    Rectangle()
-                        .stroke(Color.green, lineWidth: 2)  // 绿色边框
-                        .frame(width: w, height: h)
-                        .position(x: x, y: y)
-                }
-
-
+            
+            ForEach(predictObject, id: \.Id) { objectItem in
                 
-                // 可选 在矩形框中心添加标记
-//                Circle()
-//                    .fill(Color.blue)
-//                    .frame(width: 8, height: 8)
-//                    .position(x: x, y: y)
+                
+                let w = CGFloat(objectItem.width) * width
+                let h = CGFloat(objectItem.height) * height
+                let x = CGFloat(objectItem.xCenter) * width
+                let y = CGFloat(objectItem.yCenter) * height
+            
+    //        Text("width: \(width), height: \(height)")
+                
+
+                ZStack {
+                    if(objectItem.classId != -1) {
+                        Text("\(LabelList11[objectItem.classId])(\(LabelList11En[objectItem.classId])): \(String(format: "%.2f", objectItem.confidence))")
+                            .position(x: x, y: y - h / 2)
+                        
+                        // 显示矩形框
+                        Rectangle()
+                            .stroke(Color.green, lineWidth: 2)  // 绿色边框
+                            .frame(width: w, height: h)
+                            .position(x: x, y: y)
+                            
+                    }
+
+
+                    
+                    // 可选 在矩形框中心添加标记
+    //                Circle()
+    //                    .fill(Color.blue)
+    //                    .frame(width: 8, height: 8)
+    //                    .position(x: x, y: y)
+                }
+                .frame(width: geometry.size.width, height: geometry.size.height)
             }
-            .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
 }
@@ -144,6 +150,20 @@ let LabelList11 = [
     "公牛",
     "骡",
     "羊驼"
+]
+
+let LabelList11En = [
+    "Dog",
+    "Fox",
+    "Cattle",
+    "Goat",
+    "Horse",
+    "Pig",
+    "Sheep",
+    "Deer",
+    "Bull",
+    "Mule",
+    "Alpaca"
 ]
 
 let LabelList3 = [
