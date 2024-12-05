@@ -11,6 +11,8 @@ import Vision
 
 struct PredictObject {
 
+    let Id: UUID = UUID()
+    
     var xCenter: Float = 0
     var yCenter: Float = 0
     var width: Float = 0
@@ -24,7 +26,8 @@ struct PredictObject {
 class PredictionManager {
 //    private let model: yolov8n
 //    private let mobileNet: MobileNetV2
-    private let model: yolo11n_100
+//    private let model: yolo11n_100
+    private let model: yolo11m_200
 //    private let model: YOLOv3
     
     init() {
@@ -34,7 +37,8 @@ class PredictionManager {
 //            self.model = try yolov8n(configuration: configuration)
 //            self.mobileNet = try MobileNetV2(configuration: configuration)
 //            self.model = try YOLOv3(configuration: configuration)
-            self.model = try yolo11n_100(configuration: configuration)
+//            self.model = try yolo11n_100(configuration: configuration)
+            self.model = try yolo11m_200(configuration: configuration)
             print("Model successfully loaded with GPU support.")
         } catch {
             fatalError("Failed to load the CoreML model with GPU support: \(error.localizedDescription)")
@@ -49,20 +53,24 @@ class PredictionManager {
                 var detectedObjects: [PredictObject] = []
 //            let targetSize = CGSize(width: 416, height: 416) // 根据模型输入要求设置
             let targetSize = CGSize(width: 640, height: 640) // 根据模型输入要求设置
+//            let targetSize = CGSize(width: 384, height: 640)
                 if let resizedImage = image.resize(to: targetSize),
                    let pixelBuffer = resizedImage.toCVPixelBuffer() {
                     
                     //                let yolov8Input: yolov8nInput = yolov8nInput(image: pixelBuffer)
 //                    let yolov3Input: YOLOv3Input = YOLOv3Input(image: pixelBuffer)
-                    let yolo11n_100Input: yolo11n_100Input = yolo11n_100Input(image: pixelBuffer, iouThreshold: 0, confidenceThreshold: 0)
+//                    let yolo11n_100Input: yolo11n_100Input = yolo11n_100Input(image: pixelBuffer, iouThreshold: 0, confidenceThreshold: 0)
+                    let yolo11m_200Input: yolo11m_200Input = yolo11m_200Input(image: pixelBuffer, iouThreshold: 0.1, confidenceThreshold: 0.5)
                     do {
-                        let results = try self.model.prediction(input: yolo11n_100Input)
+//                        let results = try self.model.prediction(input: yolo11n_100Input)
+                        let results = try self.model.prediction(input: yolo11m_200Input)
 //                        let results = try self.model.prediction(input: yolov3Input)
                         //                    print(results.var_914)
                         
                         //                    let detectedObject: PredictObject = self.getObject(predictResult: results.var_914)
                         if (results.coordinates.count != 0) {
-                            let detectedObject: PredictObject = self.getObject11(predictResult: results)
+//                            let detectedObject: PredictObject = self.getObject11(predictResult: results)
+                            detectedObjects = self.getObject11m(predictResult: results)
 //                            let detectedObject: PredictObject = self.getObject3(predictResult: results)
                             //                    print(results.featureNames)
                             //                    print(results.confidence)
@@ -70,9 +78,9 @@ class PredictionManager {
                             //                    print(results.coordinates.count)
                             //                    print(results.coordinatesShapedArray.count)
                             
-                            if(detectedObject.confidence > 0.1) {
-                                detectedObjects.append(detectedObject)
-                            }
+//                            if(detectedObject.confidence > 0.1) {
+//                                detectedObjects.append(detectedObject)
+//                            }
                         }
                         
                         
@@ -82,11 +90,68 @@ class PredictionManager {
                 }
 //                DispatchQueue.main.async {
                     completion(detectedObjects) // 返回检测结果
+//            print("send results")
 //                }
 //            }
         }
     }
     
+    
+    func getObject11m(predictResult: yolo11m_200Output) -> [PredictObject] {
+        var detectedObjectList: [PredictObject] = [];
+        
+        let coordinates = predictResult.coordinates
+//        let xMin = coordinates[0]
+//        let yMin = coordinates[1]
+//        let xMax = coordinates[2]
+//        let yMax = coordinates[3]
+//        let X = (xMax.floatValue - xMin.floatValue) / 2 + xMin.floatValue
+//
+//
+//        let Y = (yMax.floatValue - yMin.floatValue) / 2 + yMin.floatValue
+
+        let num = (coordinates.count / 4) - 1
+        for i in (0...num) {
+            var detectedObject: PredictObject = PredictObject()
+            detectedObject.xCenter = 1 - coordinates[1 + i*4].floatValue
+            detectedObject.yCenter = coordinates[0 + i*4].floatValue
+            detectedObject.width = coordinates[3 + i*4].floatValue
+            detectedObject.height = coordinates[2 + i*4].floatValue
+    //        detectedObject.xCenter = coordinates[0].floatValue
+    //        detectedObject.yCenter = coordinates[1].floatValue
+    //        detectedObject.width = coordinates[2].floatValue
+    //        detectedObject.height = coordinates[3].floatValue
+            
+    //        detectedObject.xCenter = Float(width * coordinates[0].floatValue)
+    //        detectedObject.yCenter = Float(height * coordinates[1].floatValue)
+    //        detectedObject.width = coordinates[2].floatValue * width
+    //        detectedObject.height = coordinates[3].floatValue * height
+            
+            var maxClassConfidence: Float = 0
+            var maxClassId: Int = -1
+                        
+            
+            for j in 0..<11 {
+                
+                if (predictResult.confidence[j + i*11].floatValue > maxClassConfidence) {
+                    maxClassConfidence = predictResult.confidence[j + i*11].floatValue
+                    maxClassId = j % 11
+                }
+                
+            }
+            
+            
+            detectedObject.classId = maxClassId
+            detectedObject.confidence = Float(maxClassConfidence)
+    //        print(maxClassId)
+//            print("maxConfidence: \(detectedObject.confidence)")
+            detectedObjectList.append(detectedObject)
+        }
+      
+        
+        return detectedObjectList
+        
+    }
     
     func getObject3(predictResult: YOLOv3Output) -> PredictObject {
         var detectedObject: PredictObject = PredictObject()
