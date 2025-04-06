@@ -19,6 +19,15 @@ struct IdentifiableImage: Identifiable {
     }
 }
 
+struct GotObject {
+    
+    let Id: UUID = UUID()
+    
+    var predictObject: PredictObject
+    var image: UIImage
+    
+}
+
 struct ContentView: View {
 //  @State修饰的变量在改变后会重新渲染画面
 //  UIImage 是 UIKit 框架中的一个类，用于表示和操作图像（如 PNG、JPEG）。
@@ -28,29 +37,77 @@ struct ContentView: View {
 //    @State private var predictObject: PredictObject? = PredictObject(xCenter: 220, yCenter: 450, width: 440, height: 890)
     @State private var predictObject: [PredictObject]? = nil
     @State private var isCameraActive = true
+    @State private var isFlashing: Bool = false
+    @State var gotObjectList: [GotObject] = []
     
     var body: some View {
         NavigationView {
             ZStack {
                 if isCameraActive {
 
-//                    ResultView()
-                    CameraView(predictObject: $predictObject, capturedImage: $capturedImage)
-                        .edgesIgnoringSafeArea(.all)
+//                    ResultView(gotObjectList: gotObjectList)
+                        CameraView(predictObject: $predictObject, capturedImage: $capturedImage, isFlashing: $isFlashing, gotObjectList: $gotObjectList)
+                            .edgesIgnoringSafeArea(.all)
+
                     if let predictObject = predictObject {
-                        BoundingBoxView(predictObject: predictObject)
+                        BoundingBoxView(predictObject: predictObject, isFlashing: isFlashing)
+                    }
+                    
+                    SlideInOutAnimationView(isFlashing: isFlashing)
+                    
+                }
+                ZStack {
+                    // 自定义带内外圆角的背景
+                    RoundedRectangle(cornerRadius: 25) // 圆角矩形
+                        .fill(Color.black.opacity(0.6)) // 半透明黑色背景
+                        .frame(width: 240, height: 50) // 控制尺寸
+                    // 文字
+                    Text("Welcome use this app")
+                        .foregroundColor(.white) // 文字颜色
+                        .font(.headline)
+                }
+                .rotationEffect(.degrees(90)) // 旋转 90°，让它和背景匹配
+                .position(x: UIScreen.main.bounds.width - 30, y: UIScreen.main.bounds.height / 2) // 让它贴近屏幕右侧
+                .edgesIgnoringSafeArea(.all) // 确保背景不受安全区域影响
+                
+                
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        NavigationLink(destination: ResultView(gotObjectList: $gotObjectList)
+                            .onAppear {
+                                isCameraActive = false
+        //                        print("no")
+                            }
+                            .onDisappear {
+                                // 在返回时恢复初始状态
+                                isCameraActive = true
+        //                        print("hello")
+                            }
+                        ) {
+                            Image("FavoritesIcon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 60, height: 60)
+                                .padding()
+                                .rotationEffect(.degrees(90))
+                        }
+                        .padding(.trailing, 20)
                     }
                 }
-//                NavigationLink(destination: ResultView()) {
-//                    Text("点击这里进入下一页")
-//                }
+                
+               
                 VStack {
                     Spacer()
                     // 拍照按钮
                     Button(action: {
 //NotificationCenter.default",允许APP中的不同部分传递消息，全局共享对象，用于广播消息
-                        print("按下了拍照按钮")
-                        NotificationCenter.default.post(name: .takePhoto, object: nil)
+//                        print("按下了拍照按钮")
+                        if(self.predictObject?[0].classId != -1) {
+                            self.isFlashing = true
+                            NotificationCenter.default.post(name: .takePhoto, object: nil)
+                        }
                         
                     }) {
                     Circle()
@@ -87,47 +144,139 @@ struct ContentView: View {
 struct BoundingBoxView: View {
     // 假设你从 YOLO 模型中提取的 xywh 值（已转换为像素值）
     var predictObject: [PredictObject]
+    var isFlashing: Bool = false
     
     var width: CGFloat = UIScreen.main.bounds.width
     var height: CGFloat = UIScreen.main.bounds.height
     
+    @State var isShowFlashing: Bool = false
+    
     var body: some View {
-        GeometryReader { geometry in
+
+            
+        let folderPosition = CGPoint(x: (width / 2) + 140, y: (height / 2) + 120)
             
             ForEach(predictObject, id: \.Id) { objectItem in
                 
-                
                 let w = CGFloat(objectItem.width) * width
                 let h = CGFloat(objectItem.height) * height
+                // 因为整体转过来了，所以手动把h和w转过来
+//                let h = CGFloat(objectItem.width) * width
+//                let w = CGFloat(objectItem.height) * height
                 let x = CGFloat(objectItem.xCenter) * width
-                let y = CGFloat(objectItem.yCenter) * height
+                let y = CGFloat(objectItem.yCenter) * height - 50
+                
             
     //        Text("width: \(width), height: \(height)")
                 
+                if(objectItem.classId != -1) {
+                    ZStack {
+                        GeometryReader { geometry in
 
-                ZStack {
-                    if(objectItem.classId != -1) {
-                        Text("\(LabelList11[objectItem.classId])(\(LabelList11En[objectItem.classId])): \(String(format: "%.2f", objectItem.confidence))")
-                            .position(x: x, y: y - h / 2)
-                        
-                        // 显示矩形框
-                        Rectangle()
-                            .stroke(Color.green, lineWidth: 2)  // 绿色边框
-                            .frame(width: w, height: h)
+//                            HStack {
+//                                Text("\(LabelList11[objectItem.classId])(\(LabelList11En[objectItem.classId])): \(String(format: "%.2f", objectItem.confidence))")
+////                                Text("\(LabelList3[objectItem.classId]): \(String(format: "%.2f", objectItem.confidence))")
+//                                //                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading) // 左上角对齐
+//                                    .foregroundColor(.black)
+//                                    .font(.title)
+//                                Spacer()
+//                            }
+//                            .background(Color.gray.opacity(0.5))
+//                            .rotationEffect(.degrees(90))
+//                            .offset(x: -(w / 2) - 16, y: 0)
+//                            .position(x: x, y: y)
+                            HStack {
+                                Text("\(LabelList11[objectItem.classId])(\(LabelList11En[objectItem.classId])): \(String(format: "%.2f", objectItem.confidence))")
+                                    .foregroundColor(.black)
+                                    .font(.system(size: min(max(h * 0.2, 12), 24))) // 限制字体大小范围
+//                                    .frame(width: w, height: h, alignment: .center) // 让 Text 的尺寸匹配 w 和 h
+                                    .minimumScaleFactor(0.5) // 允许字体缩小但不至于太小
+                                    .lineLimit(1) // 限制为单行，避免背景过大
+                                    .padding(4) // 增加一点间距，使背景稍微大于文字
+                                    .background(Color.gray.opacity(0.5)) // 仅包裹文字的背景
+                                    .cornerRadius(5) // 让背景圆角化，使其美观
+
+                            }
+                            .rotationEffect(.degrees(90)) // 旋转文本以匹配 UI
+                            .offset(x: (w / 2) + 16, y: 0)
                             .position(x: x, y: y)
                             
+                            //                        .position(x: x, y: y)
+                            //                            .background(Color.gray.opacity(0.5))
+                            //                            .background(.thinMaterial)
+                            
+                            //                            Spacer()
+                            // 显示矩形框
+                            //                            Rectangle()
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(Color.gray, lineWidth: 2)
+                                .frame(width: w, height: h)
+                                .position(x: x, y: y)
+                            //                                .position(x: x, y: y)
+                            // 闪烁效果的白色覆盖层
+                            if isFlashing {
+                                Color.white
+//                                    .opacity(isShowFlashing ? 0.1 : 0.7) // 初始透明度
+                                //                                .transition(.opacity)
+                                    .scaleEffect(isShowFlashing ? 0 : 1.0)
+//                                    .position(isShowFlashing ? folderPosition : CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2))
+                                    .position(isShowFlashing ? folderPosition : CGPoint(x: x, y: y))
+                                    .frame(width: w, height: h)
+                                    .animation(.easeOut(duration: 0.5), value: isShowFlashing)
+                                
+                                    .onAppear {
+                                        isShowFlashing = true
+                                    }
+                                    .onDisappear() {
+                                        isShowFlashing = false
+                                    }
+                            }
+                            
+                            
+                            // 可选 在矩形框中心添加标记
+                            //                Circle()
+                            //                    .fill(Color.blue)
+                            //                    .frame(width: 8, height: 8)
+                            //                    .position(x: x, y: y)
+                            //                        .frame(width: w, height: h)
+                            
+                        }
                     }
-
+                    
 
                     
-                    // 可选 在矩形框中心添加标记
-    //                Circle()
-    //                    .fill(Color.blue)
-    //                    .frame(width: 8, height: 8)
-    //                    .position(x: x, y: y)
-                }
-                .frame(width: geometry.size.width, height: geometry.size.height)
+
+//                    .frame(width: width, height: height)
+    //                .animation(.spring, value: 0.0)
             }
+        }
+    }
+}
+
+struct SlideInOutAnimationView: View {
+    var isFlashing: Bool = false
+    @State private var animationTrigger: Bool = false // 内部动画控制变量
+
+    var body: some View {
+        ZStack {
+            Image("FavoritesIcon")
+                .resizable()
+                .scaledToFit()
+                .rotationEffect(.degrees(90))
+                .frame(width: 100, height: 100)
+                .offset(x: isFlashing ? 140 : UIScreen.main.bounds.width, y: 180) // 控制图片位置
+                .animation(.easeInOut(duration: 0.5), value: isFlashing)
+                .onChange(of: isFlashing) {
+                    startAnimation() // 触发动画
+                }
+
+        }
+    }
+    /// 自动触发动画
+    private func startAnimation() {
+        animationTrigger = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // 动画时长
+            animationTrigger = false
         }
     }
 }
