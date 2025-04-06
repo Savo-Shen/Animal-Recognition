@@ -31,6 +31,7 @@ struct ResultView: View {
                         isZoomed = false
                         zoomedImage = nil
                     }
+                    .rotationEffect(.degrees(270))
             }
             else {
                 VStack {
@@ -56,6 +57,8 @@ struct ResultDetailView: View {
             ForEach(gotObjectList, id: \.Id) { object in
                 HStack {
                     Image(uiImage: object.image)
+                        .resizable()
+                        .scaledToFit()
                         .frame(width: 100, height: 100)
                         .clipShape(RoundedRectangle(cornerRadius: 20)) // 裁剪图片为圆角
                         .overlay(
@@ -66,7 +69,7 @@ struct ResultDetailView: View {
                         .onTapGesture {
                             zoomedImage = object.image
                         }
-                        .rotationEffect(.degrees(90))
+                        .rotationEffect(.degrees(270))
                     Spacer()
                     VStack {
                         Text("动物名：\(LabelList11[object.predictObject.classId])")
