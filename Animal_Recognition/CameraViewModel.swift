@@ -114,11 +114,11 @@ struct CameraView: UIViewControllerRepresentable {
             let height = CGFloat(cgImage.width)
             let width = CGFloat(cgImage.height)
 //            cgImage 的坐标系起点为左上角，而 UIKit 或 SwiftUI 的坐标系起点为左下角。如果你直接使用 UIKit 或 SwiftUI 的 CGRect，需要将 y 值调整：
-            print(object)
-            print(width)
-            print(object.width)
-            print(height)
-            print(object.height)
+//            print(object)
+//            print(width)
+//            print(object.width)
+//            print(height)
+//            print(object.height)
             
             let w: CGFloat = CGFloat(object.width) * width
             let h: CGFloat = CGFloat(object.height) * height
