@@ -7,50 +7,87 @@
 
 import SwiftUI
 
+struct FullScreenZoomedImage: View {
+    var image: UIImage
+    var onDismiss: () -> Void
+
+    @State private var scale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+
+    var body: some View {
+        ZStack {
+            Color.white.edgesIgnoringSafeArea(.all) // 设置背景为白色
+
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+                .scaleEffect(scale)
+                .offset(offset)
+                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                .gesture(
+                    SimultaneousGesture(
+                        MagnificationGesture()
+                            .onChanged { value in
+                                scale = value
+                            }
+                            .onEnded { finalValue in
+                                withAnimation {
+                                    scale = max(1.0, finalValue)
+                                }
+                            },
+                        DragGesture()
+                            .onChanged { value in
+                                offset = CGSize(
+                                    width: lastOffset.width + value.translation.width,
+                                    height: lastOffset.height + value.translation.height
+                                )
+                            }
+                            .onEnded { _ in
+                                // 拖动结束后恢复偏移
+                                withAnimation(.spring()) {
+                                    offset = .zero
+                                }
+                                lastOffset = .zero
+                            }
+                    )
+                )
+                .onTapGesture {
+                    onDismiss()
+                }
+                .rotationEffect(.degrees(270))
+        }
+    }
+}
+
 struct ResultView: View {
     
     @Binding var gotObjectList: [GotObject]
     @State var zoomedImage: UIImage? = nil
-    @State var isZoomed: Bool = false
     
     var body: some View {
-        ZStack {
-            if let image = zoomedImage {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: isZoomed ? UIScreen.main.bounds.width : 100, // 放大为全屏或设置为初始大小
-                           height: isZoomed ? UIScreen.main.bounds.height : 100)
-                    .cornerRadius(isZoomed ? 0 : 20) // 缩小时带圆角，放大时去掉圆角
-                    .edgesIgnoringSafeArea(.all)
-                    .animation(.easeInOut(duration: 0.5), value: isZoomed) // 添加平滑动画
-                    .onAppear() {
-                        isZoomed = true
-                    }
-                    .onTapGesture {
-                        isZoomed = false
-                        zoomedImage = nil
-                    }
-                    .rotationEffect(.degrees(270))
-            }
-            else {
-                VStack {
-                    Text("已获取的图片结果")
-                        .font(.largeTitle)
-                        .fontWeight(.medium)
-                    ResultDetailView(gotObjectList: gotObjectList, isZoomed: $isZoomed, zoomedImage: $zoomedImage)
-                    Spacer()
-                }
+        VStack {
+            Text("已获取的图片结果")
+                .font(.largeTitle)
+                .fontWeight(.medium)
+            ResultDetailView(gotObjectList: gotObjectList, zoomedImage: $zoomedImage)
+            Spacer()
+        }
+        .sheet(item: $zoomedImage) { image in
+            FullScreenZoomedImage(image: image) {
+                zoomedImage = nil
             }
         }
+
     }
 }
 
 struct ResultDetailView: View {
     
     var gotObjectList: [GotObject]
-    @Binding var isZoomed: Bool
     @Binding var zoomedImage: UIImage?
+    
+    @State private var selectedItem: GotObject? = nil // 新增状态来记录当前被选中的物品
     
     var body: some View {
         List {
@@ -65,22 +102,44 @@ struct ResultDetailView: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .stroke(Color.gray, lineWidth: 2)
                         )
-//                        .animation(.easeInOut(duration: 0.3), value: isZoomed) // 添加平滑动画
+                        .rotationEffect(.degrees(270))
                         .onTapGesture {
                             zoomedImage = object.image
                         }
-                        .rotationEffect(.degrees(270))
                     Spacer()
-                    VStack {
-                        Text("动物名：\(LabelList11[object.predictObject.classId])")
-                        Text("习性")
-                        Text("简介")
+                    NavigationLink(
+                        destination: ObjectDetailView(object: object),
+                        tag: object,
+                        selection: $selectedItem
+                    ) {
+                        VStack(alignment: .leading) {
+                            Text("动物名：\(LabelList11[object.predictObject.classId])")
+                            Text("习性")
+                            Text("简介")
+                        }
                     }
+//                    NavigationLink(
+//                        value: object,
+//                        label: {
+//                            VStack(alignment: .leading) {
+//                                Text("动物名：\(LabelList11[object.predictObject.classId])")
+//                                Text("习性")
+//                                Text("简介")
+//                            }
+//                        }
+//                    )
+//                    .navigationDestination(for: GotObject.self) { object in
+//                        ObjectDetailView(object: object) // 导航到详情页
+//                    }
                     Spacer()
                 }
             }
         }
     }
+}
+
+extension UIImage: Identifiable {
+    public var id: String { "\(self.hash)" }
 }
 
 //#Preview {
