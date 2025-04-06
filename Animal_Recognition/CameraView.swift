@@ -19,13 +19,23 @@ struct IdentifiableImage: Identifiable {
     }
 }
 
-struct GotObject {
-    
-    let Id: UUID = UUID()
-    
+//Hashable才满足hash
+struct GotObject: Identifiable, Hashable {
+    let Id: UUID = UUID() // 唯一标识符
     var predictObject: PredictObject
     var image: UIImage
+
+    // 确保 `GotObject` 类型遵循 `Identifiable` 协议
+    var id: UUID { self.Id } // `Identifiable` 协议要求实现 `id` 属性
     
+    // 确保 `GotObject` 类型遵循 `Hashable`
+    static func ==(lhs: GotObject, rhs: GotObject) -> Bool {
+        return lhs.Id == rhs.Id // 比较 `Id`
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(Id) // 使用 `Id` 来计算哈希
+    }
 }
 
 struct ContentView: View {
@@ -41,7 +51,8 @@ struct ContentView: View {
     @State var gotObjectList: [GotObject] = []
     
     var body: some View {
-        NavigationView {
+//      NavigationView: 是旧版，在iOS16后被NavigationStack取代了
+        NavigationStack {
             ZStack {
                 if isCameraActive {
 
