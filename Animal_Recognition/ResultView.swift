@@ -67,9 +67,13 @@ struct ResultView: View {
     
     var body: some View {
         VStack {
-            Text("已获取的图片结果")
-                .font(.largeTitle)
-                .fontWeight(.medium)
+            Spacer()
+            Text("🖼️ 已获取的图片结果\nCaptured Results")
+                .font(.system(size: 30, weight: .bold))
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.center)
+                .padding(.top, 20)
+            Spacer()
             ResultDetailView(gotObjectList: gotObjectList, zoomedImage: $zoomedImage)
             Spacer()
         }
@@ -113,8 +117,8 @@ struct ResultDetailView: View {
                         selection: $selectedItem
                     ) {
                         VStack(alignment: .leading) {
-                            Text("动物名(Animal Name)：\(LabelList11[object.predictObject.classId])(\(LabelList11En[object.predictObject.classId]))")
-                            Text("准确度（Accuracy) ：\(object.predictObject.confidence)")
+                            Text("动物名(Animal Name)：\n \(LabelList11[object.predictObject.classId])(\(LabelList11En[object.predictObject.classId]))")
+                            Text("准确度（Accuracy) ：\n \(object.predictObject.confidence)")
                         }
                     }
 //                    NavigationLink(

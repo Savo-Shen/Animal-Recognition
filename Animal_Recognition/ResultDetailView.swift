@@ -18,22 +18,37 @@ struct ObjectDetailView: View {
                     .scaledToFit()
                     .rotationEffect(.degrees(270))
                     .frame(maxHeight: 300)
-                Text("\(LabelList11[object.predictObject.classId])(\(LabelList11En[object.predictObject.classId]))")
+                    .padding(.top, 40)
+                    .padding(.bottom, 60)
+                Text("🐾 \(LabelList11[object.predictObject.classId]) \(LabelList11En[object.predictObject.classId])")
                     .font(.title)
-                    .padding()
-                Text("准确度（Accuracy) ：\(object.predictObject.confidence)")
-                Text(animals[object.predictObject.classId])
-                    .padding()
-                Text(animalsEn[object.predictObject.classId])
-                    .padding()
-                VStack {
-                    Link("查看百科介绍", destination: URL(string: links[object.predictObject.classId])!)
-                    Link("View the encyclopedia introduction", destination: URL(string: links[object.predictObject.classId])!)
-                }
-                    .font(.body)
-                    .foregroundColor(.blue)
+                    .bold()
                     .multilineTextAlignment(.center)
-                    .padding()
+                    .padding(.bottom, 8)
+                Text("🎯 准确度 (Accuracy): ")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Text("\(object.predictObject.confidence)")
+                    .font(.title2)
+                    .padding(.bottom, 20)
+                Text(animals[object.predictObject.classId])
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+
+                Text(animalsEn[object.predictObject.classId])
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+                    .padding(.bottom, 20)
+                VStack(spacing: 6) {
+                    Link("📚 查看百科介绍", destination: URL(string: links[object.predictObject.classId])!)
+                    Link("🔗 View the encyclopedia introduction", destination: URL(string: links[object.predictObject.classId])!)
+                }
+                .font(.body)
+                .foregroundColor(.blue)
+                .multilineTextAlignment(.center)
+                .padding(.top, 8)
             }
             .navigationTitle("详情")
             .padding()
@@ -81,4 +96,3 @@ let animalsEn: [String] = [
     "Mule: A hybrid of a horse and a donkey. Strong and enduring but typically infertile.",
     "Alpaca: Native to South America, gentle in nature, and known for its soft and high-quality fleece."
 ]
-

@@ -163,7 +163,6 @@ struct BoundingBoxView: View {
     @State var isShowFlashing: Bool = false
     
     var body: some View {
-
             
         let folderPosition = CGPoint(x: (width / 2) + 140, y: (height / 2) + 120)
             
@@ -175,7 +174,7 @@ struct BoundingBoxView: View {
 //                let h = CGFloat(objectItem.width) * width
 //                let w = CGFloat(objectItem.height) * height
                 let x = CGFloat(objectItem.xCenter) * width
-                let y = CGFloat(objectItem.yCenter) * height - 50
+                let y = CGFloat(objectItem.yCenter) * height - 90
                 
             
     //        Text("width: \(width), height: \(height)")
