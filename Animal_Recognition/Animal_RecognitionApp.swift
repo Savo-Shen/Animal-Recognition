@@ -11,7 +11,7 @@ import SwiftUI
 struct Animal_RecognitionApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Welcome()
 
         }
     }
