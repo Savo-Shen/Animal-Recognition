@@ -113,9 +113,8 @@ struct ResultDetailView: View {
                         selection: $selectedItem
                     ) {
                         VStack(alignment: .leading) {
-                            Text("动物名：\(LabelList11[object.predictObject.classId])")
-                            Text("习性")
-                            Text("简介")
+                            Text("动物名(Animal Name)：\(LabelList11[object.predictObject.classId])(\(LabelList11En[object.predictObject.classId]))")
+                            Text("准确度（Accuracy) ：\(object.predictObject.confidence)")
                         }
                     }
 //                    NavigationLink(
