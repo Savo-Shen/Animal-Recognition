@@ -57,7 +57,7 @@ struct ContentView: View {
                 if isCameraActive {
 
 //                    ResultView(gotObjectList: gotObjectList)
-                        CameraView(predictObject: $predictObject, capturedImage: $capturedImage, isFlashing: $isFlashing, gotObjectList: $gotObjectList)
+                        CameraViewModel(predictObject: $predictObject, capturedImage: $capturedImage, isFlashing: $isFlashing, gotObjectList: $gotObjectList)
                             .edgesIgnoringSafeArea(.all)
 
                     if let predictObject = predictObject {
@@ -153,10 +153,9 @@ struct ContentView: View {
 }
 
 struct BoundingBoxView: View {
-    // 假设你从 YOLO 模型中提取的 xywh 值（已转换为像素值）
+    
     var predictObject: [PredictObject]
     var isFlashing: Bool = false
-    
     var width: CGFloat = UIScreen.main.bounds.width
     var height: CGFloat = UIScreen.main.bounds.height
     
@@ -166,98 +165,48 @@ struct BoundingBoxView: View {
             
         let folderPosition = CGPoint(x: (width / 2) + 140, y: (height / 2) + 120)
             
-            ForEach(predictObject, id: \.Id) { objectItem in
-                
-                let w = CGFloat(objectItem.width) * width
-                let h = CGFloat(objectItem.height) * height
-                // 因为整体转过来了，所以手动把h和w转过来
-//                let h = CGFloat(objectItem.width) * width
-//                let w = CGFloat(objectItem.height) * height
-                let x = CGFloat(objectItem.xCenter) * width
-                let y = CGFloat(objectItem.yCenter) * height - 90
-                
+        ForEach(predictObject, id: \.Id) { objectItem in
             
-    //        Text("width: \(width), height: \(height)")
-                
-                if(objectItem.classId != -1) {
-                    ZStack {
-                        GeometryReader { geometry in
-
-//                            HStack {
-//                                Text("\(LabelList11[objectItem.classId])(\(LabelList11En[objectItem.classId])): \(String(format: "%.2f", objectItem.confidence))")
-////                                Text("\(LabelList3[objectItem.classId]): \(String(format: "%.2f", objectItem.confidence))")
-//                                //                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading) // 左上角对齐
-//                                    .foregroundColor(.black)
-//                                    .font(.title)
-//                                Spacer()
-//                            }
-//                            .background(Color.gray.opacity(0.5))
-//                            .rotationEffect(.degrees(90))
-//                            .offset(x: -(w / 2) - 16, y: 0)
-//                            .position(x: x, y: y)
-                            HStack {
-                                Text("\(LabelList11[objectItem.classId])(\(LabelList11En[objectItem.classId])): \(String(format: "%.2f", objectItem.confidence))")
-                                    .foregroundColor(.black)
-                                    .font(.system(size: min(max(h * 0.2, 12), 24))) // 限制字体大小范围
-//                                    .frame(width: w, height: h, alignment: .center) // 让 Text 的尺寸匹配 w 和 h
-                                    .minimumScaleFactor(0.5) // 允许字体缩小但不至于太小
-                                    .lineLimit(1) // 限制为单行，避免背景过大
-                                    .padding(4) // 增加一点间距，使背景稍微大于文字
-                                    .background(Color.gray.opacity(0.5)) // 仅包裹文字的背景
-                                    .cornerRadius(5) // 让背景圆角化，使其美观
-
-                            }
-                            .rotationEffect(.degrees(90)) // 旋转文本以匹配 UI
-                            .offset(x: (w / 2) + 16, y: 0)
+            let w = CGFloat(objectItem.width) * width
+            let h = CGFloat(objectItem.height) * height
+            let x = CGFloat(objectItem.xCenter) * width
+            let y = CGFloat(objectItem.yCenter) * height - 90
+            
+            if(objectItem.classId != -1) {
+                ZStack {
+                    GeometryReader { geometry in
+                        HStack {
+                            Text("\(LabelList11[objectItem.classId])(\(LabelList11En[objectItem.classId])): \(String(format: "%.2f", objectItem.confidence))")
+                                .foregroundColor(.black)
+                                .font(.system(size: min(max(h * 0.2, 12), 24))) //
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
+                                .padding(4)
+                                .background(Color.gray.opacity(0.5))
+                                .cornerRadius(5)
+                        }
+                        .rotationEffect(.degrees(90))
+                        .offset(x: (w / 2) + 16, y: 0)
+                        .position(x: x, y: y)
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color.gray, lineWidth: 2)
+                            .frame(width: w, height: h)
                             .position(x: x, y: y)
-                            
-                            //                        .position(x: x, y: y)
-                            //                            .background(Color.gray.opacity(0.5))
-                            //                            .background(.thinMaterial)
-                            
-                            //                            Spacer()
-                            // 显示矩形框
-                            //                            Rectangle()
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color.gray, lineWidth: 2)
+                        if isFlashing {
+                            Color.white
+                                .scaleEffect(isShowFlashing ? 0 : 1.0)
+                                .position(isShowFlashing ? folderPosition : CGPoint(x: x, y: y))
                                 .frame(width: w, height: h)
-                                .position(x: x, y: y)
-                            //                                .position(x: x, y: y)
-                            // 闪烁效果的白色覆盖层
-                            if isFlashing {
-                                Color.white
-//                                    .opacity(isShowFlashing ? 0.1 : 0.7) // 初始透明度
-                                //                                .transition(.opacity)
-                                    .scaleEffect(isShowFlashing ? 0 : 1.0)
-//                                    .position(isShowFlashing ? folderPosition : CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2))
-                                    .position(isShowFlashing ? folderPosition : CGPoint(x: x, y: y))
-                                    .frame(width: w, height: h)
-                                    .animation(.easeOut(duration: 0.5), value: isShowFlashing)
-                                
-                                    .onAppear {
-                                        isShowFlashing = true
-                                    }
-                                    .onDisappear() {
-                                        isShowFlashing = false
-                                    }
-                            }
-                            
-                            
-                            // 可选 在矩形框中心添加标记
-                            //                Circle()
-                            //                    .fill(Color.blue)
-                            //                    .frame(width: 8, height: 8)
-                            //                    .position(x: x, y: y)
-                            //                        .frame(width: w, height: h)
-                            
+                                .animation(.easeOut(duration: 0.5), value: isShowFlashing)
+                                .onAppear {
+                                    isShowFlashing = true
+                                }
+                                .onDisappear() {
+                                    isShowFlashing = false
+                                }
                         }
                     }
-                    
-
-                    
-
-//                    .frame(width: width, height: height)
-    //                .animation(.spring, value: 0.0)
+                }
             }
         }
     }
@@ -265,7 +214,7 @@ struct BoundingBoxView: View {
 
 struct SlideInOutAnimationView: View {
     var isFlashing: Bool = false
-    @State private var animationTrigger: Bool = false // 内部动画控制变量
+    @State private var animationTrigger: Bool = false
 
     var body: some View {
         ZStack {
@@ -274,25 +223,21 @@ struct SlideInOutAnimationView: View {
                 .scaledToFit()
                 .rotationEffect(.degrees(90))
                 .frame(width: 100, height: 100)
-                .offset(x: isFlashing ? 140 : UIScreen.main.bounds.width, y: 180) // 控制图片位置
+                .offset(x: isFlashing ? 140 : UIScreen.main.bounds.width, y: 180)
                 .animation(.easeInOut(duration: 0.5), value: isFlashing)
                 .onChange(of: isFlashing) {
-                    startAnimation() // 触发动画
+                    startAnimation()
                 }
 
         }
     }
-    /// 自动触发动画
     private func startAnimation() {
         animationTrigger = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // 动画时长
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             animationTrigger = false
         }
     }
 }
-
-// extension: 允许为现有类型添加新的功能，在这里，extension 用于为 Notification.Name 类型添加一个新的静态常量。
-// Notification.Name是一个类型，用来表示 通知 的名称，允许不同部分的代码之前进行通讯
 extension Notification.Name {
     static let takePhoto = Notification.Name("takePhoto")
 }

@@ -121,19 +121,6 @@ struct ResultDetailView: View {
                             Text("准确度（Accuracy) ：\n \(object.predictObject.confidence)")
                         }
                     }
-//                    NavigationLink(
-//                        value: object,
-//                        label: {
-//                            VStack(alignment: .leading) {
-//                                Text("动物名：\(LabelList11[object.predictObject.classId])")
-//                                Text("习性")
-//                                Text("简介")
-//                            }
-//                        }
-//                    )
-//                    .navigationDestination(for: GotObject.self) { object in
-//                        ObjectDetailView(object: object) // 导航到详情页
-//                    }
                     Spacer()
                 }
             }
