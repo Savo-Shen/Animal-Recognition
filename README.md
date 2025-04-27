@@ -15,7 +15,7 @@ My graduation project is "Development of an AI-Powered Mobile Application for An
 
 ## Development
 
-![Project Structure](./res/images/Animal%20Identification%20on%20iOS.png.png)
+![Project Structure](./res/images/Animal%20Identification%20on%20iOS.png)
 
 ### Dataset Selection
 The dataset I selected is [Open Images V7 Animals YOLO](https://www.kaggle.com/datasets/sergiomoy/open-imagea-v7-animals-yolo) which contains 50,000 images of 11 classes of animals.

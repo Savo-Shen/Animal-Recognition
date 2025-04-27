@@ -12,7 +12,7 @@
 - [Swift + SwiftUI原生iOS开发 开发笔记4（1.0.0最终） – 识别结果信息详情 + 页面美化 + 总结](https://shenyifan.home.blog/2025/04/13/swift-swiftui原生ios开发-开发笔记4（1-0-0最终）-识别结果信/)
 
 ## 开发
-![Project Structure](./res/images/Animal%20Identification%20on%20iOS.png.png)
+![Project Structure](./res/images/Animal%20Identification%20on%20iOS.png)
 
 ### 数据集选择
 我选择的数据集是[Open Images V7 Animals YOLO](https://www.kaggle.com/datasets/sergiomoy/open-imagea-v7-animals-yolo)，包含11类动物的50,000张图片。
