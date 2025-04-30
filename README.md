@@ -1,6 +1,6 @@
 # Animal-Recognition
 
-![LOGO](./res/images/logo_1024.png)
+![LOGO](./res/images/logo_1024.jpg)
 
 An Initial iOS project developed by Swift and SwiftUI to recognize animals.
 
