@@ -1,6 +1,6 @@
 # Animal-Recognition
 
-![LOGO](./Animal_Recognition/Assets.xcassets/AppIcon.appiconset/logo_1024.png)
+![LOGO](./res/images/logo_1024.png)
 
 An Initial iOS project developed by Swift and SwiftUI to recognize animals.
 
